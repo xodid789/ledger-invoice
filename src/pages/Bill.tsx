@@ -22,6 +22,26 @@ export default function Bill() {
   const girls = hostessesIn(space.id)
   const hasTc = space.tcLog.length > 0 || girls.length > 0
 
+  // 같은 이름끼리 합산
+  const tcRows = (() => {
+    const map = new Map<string, { labels: string[]; amount: number }>()
+    for (const r of space.tcLog)
+      map.has(r.name)
+        ? (map.get(r.name)!.labels.push(r.label), (map.get(r.name)!.amount += r.amount))
+        : map.set(r.name, { labels: [r.label], amount: r.amount })
+    for (const g of girls) {
+      const lbl = hostessTimeLabel(g), amt = hostessTC(g)
+      map.has(g.name)
+        ? (map.get(g.name)!.labels.push(lbl), (map.get(g.name)!.amount += amt))
+        : map.set(g.name, { labels: [lbl], amount: amt })
+    }
+    return [...map.entries()].map(([name, { labels, amount }]) => {
+      const u = [...new Set(labels)]
+      const label = u.length === 1 && labels.length > 1 ? `${u[0]} × ${labels.length}` : labels.join(' · ')
+      return { name, label, amount }
+    })
+  })()
+
   return (
     <div>
       <div className="page-head no-print">
@@ -110,18 +130,11 @@ export default function Bill() {
               </tr>
             ) : (
               <>
-                {space.tcLog.map((r) => (
-                  <tr key={r.id}>
+                {tcRows.map((r) => (
+                  <tr key={r.name}>
                     <td className="t-name">{r.name}</td>
                     <td className="t-num">{r.label}</td>
                     <td className="t-num">{won(r.amount)}</td>
-                  </tr>
-                ))}
-                {girls.map((g) => (
-                  <tr key={g.id}>
-                    <td className="t-name">{g.name}</td>
-                    <td className="t-num">{hostessTimeLabel(g)}</td>
-                    <td className="t-num">{won(hostessTC(g))}</td>
                   </tr>
                 ))}
               </>
