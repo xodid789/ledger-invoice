@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { NavLink, Route, Routes } from 'react-router-dom'
 import AlarmManager from './AlarmManager'
 import Board from './pages/Board'
@@ -10,6 +11,20 @@ import { useAuth } from './auth'
 const navClass = ({ isActive }: { isActive: boolean }) =>
   'nav-link' + (isActive ? ' active' : '')
 
+const DAYS = ['일', '월', '화', '수', '목', '금', '토']
+
+function Clock() {
+  const [now, setNow] = useState(Date.now())
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000)
+    return () => clearInterval(id)
+  }, [])
+  const d = new Date(now)
+  const date = `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 (${DAYS[d.getDay()]})`
+  const time = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`
+  return <div className="nav-clock"><span>{date}</span><span>{time}</span></div>
+}
+
 export default function App() {
   const { signOut } = useAuth()
   return (
@@ -20,6 +35,7 @@ export default function App() {
           <NavLink to="/" className="brand">
             🍷 룸 보드
           </NavLink>
+          <Clock />
           <nav>
             <NavLink to="/" end className={navClass}>
               현황판
