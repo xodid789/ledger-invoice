@@ -81,7 +81,7 @@ export default function Closing() {
               <th>손님</th>
               <th>주대</th>
               <th>TC</th>
-              <th>룸티</th>
+              <th>RT</th>
               <th>합계</th>
             </tr>
           </thead>

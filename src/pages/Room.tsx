@@ -172,7 +172,7 @@ export default function Room() {
           </div>
           {roomFee(space) > 0 && (
             <div>
-              <span className="muted">룸티</span>
+              <span className="muted">RT</span>
               <b>{won(roomFee(space))}원</b>
             </div>
           )}

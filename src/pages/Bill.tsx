@@ -152,7 +152,7 @@ export default function Bill() {
 
         {roomFee(space) > 0 && (
           <p className="receipt__line">
-            <span>■ 룸티</span>
+            <span>■ RT</span>
             <b>{won(roomFee(space))}원</b>
           </p>
         )}

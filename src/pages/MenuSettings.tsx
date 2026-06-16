@@ -50,7 +50,7 @@ export default function MenuSettings() {
         <span className="won-label">원 / 시간 (1타임)</span>
       </div>
 
-      <h2 className="section-title">룸티 (사용 시 자동 부과)</h2>
+      <h2 className="section-title">RT (사용 시 자동 부과)</h2>
       <div className="field--row-2">
         <input
           type="number"
