@@ -32,6 +32,15 @@ export default function Board() {
     const occupied = isOccupied(space)
     const girls = hostessesIn(space.id)
     const alert = girls.some((g) => hostessTimer(g, now)?.warn)
+    const startTs =
+      space.openedAt ??
+      girls.reduce<number | null>(
+        (min, g) => (g.enteredAt !== null ? (min === null || g.enteredAt < min ? g.enteredAt : min) : min),
+        null,
+      )
+    const startTime = startTs
+      ? new Date(startTs).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false })
+      : null
     const drinks = space.orders
       .map((o) => `${abbrOf(o.menuId, o.name)} ${o.qty}`)
       .join(' · ')
@@ -43,10 +52,11 @@ export default function Board() {
       >
         <div className="tile__top">
           <span className="tile__label">{space.label}</span>
-          {alert ? (
-            <span className="badge-ext">⏰ 연장</span>
-          ) : (
-            occupied && <span className="tile__live">영업중</span>
+          {occupied && (
+            <div className="tile__top-right">
+              {alert ? <span className="badge-ext">⏰ 연장</span> : <span className="tile__live">영업중</span>}
+              {startTime && <span className="tile__since">{startTime}~</span>}
+            </div>
           )}
         </div>
         <div className="tile__customer">

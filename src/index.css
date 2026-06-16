@@ -259,6 +259,17 @@ select {
   border-radius: 999px;
   padding: 2px 8px;
 }
+.tile__top-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+.tile__since {
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1;
+}
 .tile__customer {
   font-size: 14px;
   font-weight: 700;
