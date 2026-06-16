@@ -58,7 +58,29 @@ export default function Board() {
         </div>
         <div className="tile__drinks">{drinks ? `🍾 ${drinks}` : ' '}</div>
         <div className="tile__girls">
-          {girls.length > 0 ? `👩 ${girls.map((g) => g.name).join(', ')}` : ' '}
+          {girls.length > 0 ? (
+            girls.map((g) => {
+              const timer = hostessTimer(g, now)
+              const entryTime = g.enteredAt
+                ? new Date(g.enteredAt).toLocaleTimeString('ko-KR', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false,
+                  })
+                : null
+              const mins = timer ? Math.floor(timer.elapsed / 60000) : null
+              return (
+                <div key={g.id} className="tile__girl-row">
+                  <span>👩 {g.name}</span>
+                  {entryTime && mins !== null && (
+                    <span className="tile__girl-timer">{entryTime} · {mins}분</span>
+                  )}
+                </div>
+              )
+            })
+          ) : (
+            <span> </span>
+          )}
         </div>
         <div className="tile__foot">
           <span className="muted">{girls.length}명</span>

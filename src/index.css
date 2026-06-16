@@ -271,11 +271,22 @@ select {
 }
 .tile__girls {
   font-size: 12px;
-  color: var(--muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   min-height: 16px;
+}
+.tile__girl-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px;
+  overflow: hidden;
+}
+.tile__girl-timer {
+  white-space: nowrap;
+  color: var(--muted);
+  font-size: 11px;
 }
 .tile__foot {
   margin-top: auto;
