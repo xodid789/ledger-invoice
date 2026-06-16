@@ -1,5 +1,5 @@
 import { supabase } from './lib/supabase'
-import type { Hostess, MenuItem, OrderItem, Settings, Space, TcRecord } from './types'
+import type { ClosureRecord, ClosureRoom, Hostess, MenuItem, OrderItem, Settings, Space, TcRecord } from './types'
 
 // 2단계: Supabase(Postgres + Realtime)로 데이터를 공유한다.
 // 화면 코드(store.tsx)는 storage의 fetch/update/subscribe만 사용한다.
@@ -175,6 +175,31 @@ async function updateSettings(s: Settings): Promise<void> {
   if (error) console.error('updateSettings', error)
 }
 
+async function insertClosure(record: ClosureRecord): Promise<void> {
+  const { error } = await supabase.from('closures').insert({
+    id: record.id,
+    closed_at: record.closedAt,
+    venue_opened_at: record.venueOpenedAt,
+    rooms: record.rooms,
+  })
+  if (error) console.error('insertClosure', error)
+}
+
+async function fetchClosures(): Promise<ClosureRecord[]> {
+  const { data, error } = await supabase
+    .from('closures')
+    .select('id, closed_at, venue_opened_at, rooms')
+    .order('closed_at', { ascending: false })
+    .limit(60)
+  if (error) throw error
+  return (data ?? []).map((r: { id: string; closed_at: number; venue_opened_at: number | null; rooms: ClosureRoom[] }) => ({
+    id: r.id,
+    closedAt: r.closed_at,
+    venueOpenedAt: r.venue_opened_at ?? null,
+    rooms: r.rooms,
+  }))
+}
+
 // --- 실시간 구독 (다른 기기의 변경을 반영) ---
 
 type Unsubscribe = () => void
@@ -265,4 +290,6 @@ export const storage = {
   subscribeHostesses,
   subscribeMenu,
   subscribeSettings,
+  insertClosure,
+  fetchClosures,
 }

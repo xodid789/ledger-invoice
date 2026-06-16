@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
-import type { Hostess, MenuItem, Settings, Space } from './types'
+import type { ClosureRecord, Hostess, MenuItem, Settings, Space } from './types'
 import { defaultSettings, newId, storage } from './storage'
 import { HALF_MS } from './lib/timer'
 
@@ -39,6 +39,7 @@ interface Store {
   saveSettings: (s: Settings) => void
   openVenue: () => void
   closeVenue: () => void
+  closures: ClosureRecord[]
 }
 
 const Ctx = createContext<Store | null>(null)
@@ -55,6 +56,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [hostesses, setHostesses] = useState<Hostess[]>([])
   const [menu, setMenu] = useState<MenuItem[]>([])
   const [settings, setSettings] = useState<Settings>(defaultSettings)
+  const [closures, setClosures] = useState<ClosureRecord[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -69,6 +71,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       storage.fetchHostesses().then(setHostesses),
       storage.fetchMenu().then(setMenu),
       storage.fetchSettings().then(setSettings),
+      storage.fetchClosures().then(setClosures),
     ])
       .catch((e) => console.error('초기 로드 실패', e))
       .finally(() => setLoading(false))
@@ -322,6 +325,24 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }
 
   const closeVenue = () => {
+    const record: ClosureRecord = {
+      id: newId(),
+      closedAt: Date.now(),
+      venueOpenedAt: settings.venueOpenedAt,
+      rooms: spaces
+        .filter((s) => spaceTotal(s) > 0 || isOccupied(s))
+        .map((s) => ({
+          label: s.label,
+          customer: s.customer,
+          drink: drinkTotal(s),
+          tc: tcTotal(s),
+          rt: roomFee(s),
+          total: spaceTotal(s),
+        })),
+    }
+    void storage.insertClosure(record)
+    setClosures((prev) => [record, ...prev])
+
     setSpaces((prev) => prev.map((s) => ({ ...s, customer: '', orders: [], tcLog: [], openedAt: null })))
     spaces.forEach((s) => void storage.updateSpace(s.id, { customer: '', orders: [], tcLog: [], openedAt: null }))
     setHostesses((prev) => prev.map((h) => ({ ...h, roomId: null, enteredAt: null, working: false, times: 0 })))
@@ -362,6 +383,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     saveSettings,
     openVenue,
     closeVenue,
+    closures,
   }
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>

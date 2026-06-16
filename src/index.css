@@ -90,6 +90,19 @@ select {
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.03em;
 }
+.closure-record {
+  margin-bottom: 28px;
+}
+.closure-record__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 13px;
+  font-weight: 600;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 4px;
+}
 .closing-open-badge {
   font-size: 13px;
   font-weight: 600;

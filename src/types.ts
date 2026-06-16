@@ -40,6 +40,22 @@ export interface MenuItem {
   price: number
 }
 
+export interface ClosureRoom {
+  label: string
+  customer: string
+  drink: number
+  tc: number
+  rt: number
+  total: number
+}
+
+export interface ClosureRecord {
+  id: string
+  closedAt: number
+  venueOpenedAt: number | null
+  rooms: ClosureRoom[]
+}
+
 export interface Settings {
   venueName: string // 업장명 (계산서 상단)
   hourlyRate: number // 아가씨 시간당 요금 (TC), 기본 120000. 반타임은 절반.

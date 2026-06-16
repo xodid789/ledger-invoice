@@ -2,6 +2,12 @@ import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store'
 import { formatDate, todayStr, won } from '../lib/format'
 
+const DAYS = ['일', '월', '화', '수', '목', '금', '토']
+function fmtTs(ts: number) {
+  const d = new Date(ts)
+  return `${d.getMonth() + 1}/${d.getDate()}(${DAYS[d.getDay()]}) ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+}
+
 export default function Closing() {
   const navigate = useNavigate()
   const {
@@ -14,6 +20,7 @@ export default function Closing() {
     spaceTotal,
     openVenue,
     closeVenue,
+    closures,
   } = useStore()
 
   const activeSpaces = spaces.filter((s) => spaceTotal(s) > 0 || isOccupied(s))
@@ -132,6 +139,63 @@ export default function Closing() {
         </table>
 
         <p className="receipt__confirm">수고하셨습니다.</p>
+
+        {closures.length > 0 && (
+          <>
+            <p className="receipt__sub" style={{ marginTop: 32 }}>■ 과거 마감 기록</p>
+            {closures.map((c) => {
+              const grandTotal = c.rooms.reduce((s, r) => s + r.total, 0)
+              const openT = c.venueOpenedAt ? fmtTs(c.venueOpenedAt) : null
+              return (
+                <div key={c.id} className="closure-record">
+                  <div className="closure-record__head">
+                    <span>
+                      {fmtTs(c.closedAt)} 마감
+                      {openT && <span className="muted"> (오픈 {openT})</span>}
+                    </span>
+                    <b>{won(grandTotal)}원</b>
+                  </div>
+                  <table className="receipt__table">
+                    <thead>
+                      <tr>
+                        <th>방</th>
+                        <th>손님</th>
+                        <th>주대</th>
+                        <th>TC</th>
+                        <th>RT</th>
+                        <th>합계</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {c.rooms.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} className="t-empty">내역 없음</td>
+                        </tr>
+                      ) : (
+                        c.rooms.map((r, i) => (
+                          <tr key={i}>
+                            <td className="t-name">{r.label}</td>
+                            <td className="t-name">{r.customer || '―'}</td>
+                            <td className="t-num">{won(r.drink)}</td>
+                            <td className="t-num">{won(r.tc)}</td>
+                            <td className="t-num">{won(r.rt)}</td>
+                            <td className="t-num"><b>{won(r.total)}</b></td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td colSpan={5} className="t-lbl">합계</td>
+                        <td className="t-num"><b>{won(grandTotal)}</b></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              )
+            })}
+          </>
+        )}
       </div>
     </div>
   )
