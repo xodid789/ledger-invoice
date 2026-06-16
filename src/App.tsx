@@ -6,6 +6,7 @@ import Room from './pages/Room'
 import Bill from './pages/Bill'
 import Hostess from './pages/Hostess'
 import MenuSettings from './pages/MenuSettings'
+import Closing from './pages/Closing'
 import { useAuth } from './auth'
 
 const navClass = ({ isActive }: { isActive: boolean }) =>
@@ -46,6 +47,9 @@ export default function App() {
             <NavLink to="/settings" className={navClass}>
               설정
             </NavLink>
+            <NavLink to="/closing" className={navClass}>
+              마감장
+            </NavLink>
             <button className="nav-link nav-logout" onClick={signOut}>
               로그아웃
             </button>
@@ -59,6 +63,7 @@ export default function App() {
           <Route path="/bill/:id" element={<Bill />} />
           <Route path="/hostess" element={<Hostess />} />
           <Route path="/settings" element={<MenuSettings />} />
+          <Route path="/closing" element={<Closing />} />
         </Routes>
       </main>
     </>

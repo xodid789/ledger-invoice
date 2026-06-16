@@ -24,6 +24,7 @@ export const defaultSettings: Settings = {
   hourlyRate: 120000,
   roomCharge: 70000,
   hallBarCharge: 50000,
+  venueOpenedAt: null,
 }
 
 // --- DB row <-> 도메인 타입 매핑 (Postgres 컬럼은 snake_case) ---
@@ -89,18 +90,21 @@ interface SettingsRow {
   hourly_rate: number
   room_charge: number
   hall_bar_charge: number
+  venue_opened_at: number | null
 }
 const fromSettingsRow = (r: SettingsRow): Settings => ({
   venueName: r.venue_name,
   hourlyRate: r.hourly_rate,
   roomCharge: r.room_charge,
   hallBarCharge: r.hall_bar_charge,
+  venueOpenedAt: r.venue_opened_at ?? null,
 })
 const toSettingsRow = (s: Settings): Record<string, unknown> => ({
   venue_name: s.venueName,
   hourly_rate: s.hourlyRate,
   room_charge: s.roomCharge,
   hall_bar_charge: s.hallBarCharge,
+  venue_opened_at: s.venueOpenedAt,
 })
 
 // --- 불러오기 ---

@@ -37,6 +37,8 @@ interface Store {
   addMenu: (name: string, abbr: string, price: number) => void
   removeMenu: (id: string) => void
   saveSettings: (s: Settings) => void
+  openVenue: () => void
+  closeVenue: () => void
 }
 
 const Ctx = createContext<Store | null>(null)
@@ -313,6 +315,22 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     void storage.updateSettings(s)
   }
 
+  const openVenue = () => {
+    const s = { ...settings, venueOpenedAt: Date.now() }
+    setSettings(s)
+    void storage.updateSettings(s)
+  }
+
+  const closeVenue = () => {
+    setSpaces((prev) => prev.map((s) => ({ ...s, customer: '', orders: [], tcLog: [], openedAt: null })))
+    spaces.forEach((s) => void storage.updateSpace(s.id, { customer: '', orders: [], tcLog: [], openedAt: null }))
+    setHostesses((prev) => prev.map((h) => ({ ...h, roomId: null, enteredAt: null, working: false, times: 0 })))
+    hostesses.forEach((h) => void storage.updateHostess(h.id, { roomId: null, enteredAt: null, working: false, times: 0 }))
+    const s = { ...settings, venueOpenedAt: null }
+    setSettings(s)
+    void storage.updateSettings(s)
+  }
+
   const value: Store = {
     now,
     spaces,
@@ -342,6 +360,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     addMenu,
     removeMenu,
     saveSettings,
+    openVenue,
+    closeVenue,
   }
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>

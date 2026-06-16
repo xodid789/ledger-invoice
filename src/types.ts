@@ -45,4 +45,5 @@ export interface Settings {
   hourlyRate: number // 아가씨 시간당 요금 (TC), 기본 120000. 반타임은 절반.
   roomCharge: number // 룸티 — 방(4·5층), 기본 70000
   hallBarCharge: number // 룸티 — 홀·바, 기본 50000
+  venueOpenedAt: number | null // 오픈 기록 시각
 }

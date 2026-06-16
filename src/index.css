@@ -90,6 +90,12 @@ select {
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.03em;
 }
+.closing-open-badge {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  padding: 6px 10px;
+}
 .nav-logout {
   background: none;
   border: none;
